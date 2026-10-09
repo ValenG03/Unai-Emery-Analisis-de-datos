@@ -26,10 +26,12 @@ def load(name, h=900):
     im = Image.open(f).convert("RGB")
     return im.resize((round(im.width * h / im.height), h))  # misma altura → filas parejas, sin recortes
 
-def show(name, caption=None):
+def show(name, caption=None, scale=1.0):
     im = load(name)
     if im:
-        st.image(im, caption=caption, width="stretch")
+        pad = (1 - scale) / 2
+        col = st.columns([pad, scale, pad])[1] if scale < 1 else st
+        col.image(im, caption=caption, width="stretch")
 
 def row(names, h=460, gap=20):
     """Fotos lado a lado, centradas, con la misma altura exacta y sin recortes."""
@@ -90,12 +92,17 @@ h2,h3{{font-family:'Bebas Neue',sans-serif!important;letter-spacing:2px;color:{B
 .gal{{display:flex;margin:8px auto}}
 .gal img{{height:auto;border:1px solid {BLUE}55;
   box-shadow:0 10px 40px #000a,0 0 0 4px {CLARET}55;animation:rise 1s both}}
-.kicker{{font-family:'Bebas Neue';color:{YELLOW};letter-spacing:4px;font-size:1rem;margin:5.5rem 0 -12px}}
+.sec{{font-family:'Bebas Neue',sans-serif;color:{BLUE};letter-spacing:3px;font-size:clamp(2.2rem,4.5vw,3.2rem);
+  text-align:center;margin:6rem 0 1.4rem;text-shadow:0 0 22px {CLARET}aa}}
+[data-testid=stMain] [data-testid=stWidgetLabel]{{justify-content:center;text-align:center}}
+[data-testid=stMain] [data-testid=stRadio] [role=radiogroup]{{justify-content:center!important}}
+[role=tablist]{{justify-content:center!important;width:100%}}
+[role=tablist]>div{{justify-content:center!important}}
 [data-testid=stMetric]{{background:linear-gradient(145deg,{CARD},#22101a);border:1px solid {CLARET_L}55;
   border-top:4px solid {BLUE};padding:16px 18px;border-radius:12px;box-shadow:0 8px 30px #00000088}}
 [data-testid=stMetricValue]{{font-family:'Anton';color:{WHT};font-size:2.3rem}}
 [data-testid=stMetricLabel]{{color:{BLUE}!important;text-transform:uppercase;letter-spacing:2px}}
-.stTabs [data-baseweb=tab-list]{{gap:6px;flex-wrap:wrap}}
+.stTabs [data-baseweb=tab-list]{{gap:6px;flex-wrap:wrap;justify-content:center}}
 .stTabs [data-baseweb=tab]{{background:{CARD};border:1px solid {CLARET_L}55;border-radius:999px;padding:6px 16px}}
 .stTabs [aria-selected=true]{{background:{CLARET}!important;border-color:{BLUE}!important;color:{WHT}!important}}
 .card{{background:linear-gradient(145deg,{CARD},#1f0c16);border:1px solid {BLUE}44;border-left:5px solid {CLARET_L};
@@ -152,8 +159,8 @@ def emery_zone(fig):
                   annotation_text="🦁 Llega Emery (nov-22)", annotation_font_color=YELLOW)
     return fig
 
-def kicker(num, text):
-    st.markdown(f'<p class="kicker">{num}</p>', unsafe_allow_html=True); st.markdown(f"## {text}")
+def section(text):
+    st.markdown(f'<div class="sec">{text}</div>', unsafe_allow_html=True)
 
 # ---------- SIDEBAR ----------
 with st.sidebar:
@@ -177,10 +184,10 @@ ppp_pre, ppp_em = pre.Pts / pre.PJ, emy.Pts / emy.PJ
 c1.metric("Puntos por partido", f"{ppp_em:.2f}", f"{(ppp_em / ppp_pre - 1) * 100:+.0f}% vs antes ({ppp_pre:.2f})")
 c2.metric("% de victorias", f"{emy.G / emy.PJ * 100:.0f}%", f"{(emy.G / emy.PJ - pre.G / pre.PJ) * 100:+.0f} pp")
 c3.metric("Puesto medio", f"{S.Pos[4:].mean():.1f}º", f"{S.Pos[:3].mean() - S.Pos[4:].mean():+.1f} puestos")
-c4.metric("Europa", "4 de 4", "🏆 Europa League 2026")
+c4.metric("Europa", "5 de 6", "🏆 Europa League 2026")
 
 # ---------- 01 · EL VILLANO ----------
-kicker("01", "El villano")
+section("El villano")
 row(["villain.jfif", "5-europas-league.jpeg"])
 st.write("")
 _, mid, _ = st.columns([1, 4, 1])
@@ -192,7 +199,7 @@ video, presión alta y una línea defensiva adelantada que vive del offside.<br>
 y el primer título en tres décadas.</div>""", unsafe_allow_html=True)
 
 # ---------- 02 · MÁQUINA DEL TIEMPO ----------
-kicker("02", "Máquina del tiempo")
+section("Máquina del tiempo")
 t = st.select_slider("Elegí una temporada", S.Temporada, value="25-26")
 r = S.set_index("Temporada").loc[t]
 st.markdown(f"""<div class="card"><b class="h">{t} · {r.Pos}º · {r.Pts} pts</b><br>
@@ -201,7 +208,7 @@ st.markdown(f"""<div class="card"><b class="h">{t} · {r.Pos}º · {r.Pts} pts</
             unsafe_allow_html=True)
 
 # ---------- 03 · LOS DATOS ----------
-kicker("03", "Los datos")
+section("Los datos")
 t1, t2, t3, t4, t5, t6 = st.tabs(["📈 Puntos", "🧠 Entrenadores", "🏁 Posiciones",
                                   "⚔️ Ataque vs Defensa", "💷 Salarios", "🤖 Clusters"])
 with t1:
@@ -216,13 +223,13 @@ with t2:
     g, im = st.columns([2.3, 1])
     with g:
         m = st.radio("Comparar por", ["Puntos por partido", "% Victorias", "Goles a favor / PJ", "Goles en contra / PJ"],
-                     horizontal=True)
+                     horizontal=True, width="stretch")
         f = px.bar(C, x="Entrenador", y=m, text=C[m].round(2), color="Entrenador",
                    color_discrete_sequence=["#55505a", CLARET_L, BLUE])
         f.update_layout(showlegend=False)
         st.plotly_chart(style(f, 380), width="stretch")
     with im:
-        show("Emery.jfif", "Unai Emery, 139 partidos de Premier con el Villa")
+        show("Emery.jfif", "Unai Emery, 139 partidos de Premier con el Villa", scale=0.75)
     st.dataframe(C[["Entrenador", "PJ", "G", "E", "P", "GF", "GC", "Pts"]], hide_index=True, width="stretch")
 
 with t3:
@@ -279,7 +286,7 @@ with t6:
     cB.pyplot(fig)
 
 # ---------- 04 · VEREDICTO ----------
-kicker("04", "¿Ataque, defensa o consistencia?")
+section("¿Ataque, defensa o consistencia?")
 atk = (emy.GF / emy.PJ) / (pre.GF / pre.PJ) - 1
 dfn = 1 - (emy.GC / emy.PJ) / (pre.GC / pre.PJ)
 con = 1 - S.Pos[4:].std() / S.Pos[:3].std()
@@ -300,18 +307,18 @@ v1.markdown(f"""<div class="card">
 regularidad de club de Champions. La Europa League 2026 es la consecuencia, no la excepción.</div>""",
             unsafe_allow_html=True)
 with v2:
-    show("Emery-2.jfif")
+    show("Emery-2.jfif", scale=0.75)
 st.caption("Ataque y defensa: por partido de Premier, Emery (139 PJ) vs Smith + Gerrard + Danks (127 PJ). "
            "Consistencia: desvío estándar del puesto, 19-22 vs 23-26 (22-23 excluida por mixta).")
 
 # ---------- 05 · ESTAMBUL ----------
-kicker("05", "Estambul, 20 de mayo de 2026")
+section("Estambul, 20 de mayo de 2026")
 st.markdown('<p style="text-align:center">Aston Villa 3–0 Freiburg. Primer título europeo desde 1982 '
             'y quinta Europa League para Emery.</p>', unsafe_allow_html=True)
-row(["Unai-Emery-campeon*", "campeones-aston-villa.jpg"])
+row(["Unai-Emery-campeon*"], h=520)
 
 # ---------- 06 · FUENTES ----------
-kicker("06", "Fuentes")
+section("Fuentes")
 st.markdown(f"""<div class="card src">
 <b style="color:{YELLOW}">Oficiales</b><br>
 <a href="https://www.premierleague.com/en/stats" target="_blank">Premier League · Estadísticas</a><br>
