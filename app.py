@@ -320,9 +320,9 @@ st.markdown('<p class="note">Ataque y defensa: por partido de Premier, Emery (13
 
 # ---------- 05 · ESTAMBUL ----------
 section("Estambul, 20 de mayo de 2026")
-st.markdown('<p style="text-align:center">Aston Villa 3–0 Freiburg. Primer título europeo desde 1982 '
-            'y quinta Europa League para Emery.</p>', unsafe_allow_html=True)
 row(["Unai-Emery-campeon*"], h=520)
+st.markdown(f'<p style="text-align:center;color:{WHT};font-size:.9rem;margin-top:.8rem">Aston Villa 3–0 Freiburg. '
+            'Primer título europeo desde 1982 y quinta Europa League para Emery.</p>', unsafe_allow_html=True)
 
 # ---------- 06 · FUENTES ----------
 section("Fuentes")
