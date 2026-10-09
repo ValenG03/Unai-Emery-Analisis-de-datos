@@ -341,4 +341,4 @@ st.markdown(f"""<div class="card src">
 
 # ---------- FOOTER ----------
 st.markdown(f"""<div class="foot">{f'<img src="{LOGO}">' if LOGO else ''}
-<p>Análisis de datos hechos por Valentín Gerold en colaboración con IA</p></div>""", unsafe_allow_html=True)
+<p>Análisis de datos hecho por Valentín Gerold en colaboración con IA</p></div>""", unsafe_allow_html=True)
