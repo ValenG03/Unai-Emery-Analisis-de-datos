@@ -66,7 +66,7 @@ st.markdown(f"""<style>
 [data-testid=stSidebar]{{background:linear-gradient(180deg,{CLARET} 0%,#1a0610 60%);border-right:3px solid {BLUE}}}
 h2,h3{{font-family:'Bebas Neue',sans-serif!important;letter-spacing:2px;color:{BLUE}!important}}
 .corner{{position:fixed;top:4.3rem;right:1.6rem;width:64px;z-index:999;
-  filter:drop-shadow(0 0 8px {BLUE}88)}}
+  animation:neon 3s ease-in-out infinite}}
 @keyframes rise{{from{{opacity:0;transform:translateY(40px);filter:blur(8px)}}to{{opacity:1;transform:none;filter:blur(0)}}}}
 @keyframes shine{{0%{{background-position:0% 50%}}100%{{background-position:200% 50%}}}}
 @keyframes grow{{from{{width:0}}to{{width:min(420px,70vw)}}}}
@@ -109,7 +109,7 @@ h2,h3{{font-family:'Bebas Neue',sans-serif!important;letter-spacing:2px;color:{B
   padding:20px 22px;border-radius:12px;line-height:1.6}}
 .card b.h{{color:{YELLOW};font-family:'Anton';font-size:1.5rem;letter-spacing:1px}}
 [data-testid=stImage] img{{border-radius:14px;border:1px solid {BLUE}55;box-shadow:0 10px 40px #000a,0 0 0 4px {CLARET}55}}
-[data-testid=stCaptionContainer],[data-testid=stCaptionContainer] p{{color:{WHT}!important}}
+[data-testid=stCaptionContainer],[data-testid=stCaptionContainer] p,[data-testid=stImageCaption],[data-testid=stImageCaption] *{{color:{WHT}!important;opacity:1!important}}
 [data-testid=stWidgetLabel] p,[data-testid=stWidgetLabel] label,[role=radiogroup] p,[role=radiogroup] label{{color:{WHT}!important}}
 .stTabs [role=tab],.stTabs [role=tab] *{{color:{WHT}!important;opacity:1!important}}
 .note{{color:{WHT}!important;font-size:.85rem;line-height:1.5;padding-top:2rem}}
@@ -121,7 +121,7 @@ h2,h3{{font-family:'Bebas Neue',sans-serif!important;letter-spacing:2px;color:{B
   50%{{filter:drop-shadow(0 0 8px {BLUE}) drop-shadow(0 0 22px {YELLOW}77)}}}}
 .foot{{text-align:center;margin:6rem 0 2rem}}
 .foot img{{width:72px;animation:neon 3s ease-in-out infinite}}
-.foot p{{font-size:.75rem;color:#9c8c94;margin-top:3rem;letter-spacing:1px}}
+.foot p{{font-size:.75rem;color:{WHT}!important;margin-top:3rem;letter-spacing:1px}}
 </style>""", unsafe_allow_html=True)
 if LOGO:
     st.markdown(f'<img class="corner" src="{LOGO}">', unsafe_allow_html=True)
@@ -225,13 +225,14 @@ with t1:
     st.plotly_chart(emery_zone(style(f)), width="stretch")
 
 with t2:
-    g, im = st.columns([2.3, 1])
+    g, im = st.columns([2.3, 1], vertical_alignment="bottom")
     with g:
         m = st.radio("Comparar por", ["Puntos por partido", "% Victorias", "Goles a favor / PJ", "Goles en contra / PJ"],
                      horizontal=True, width="stretch")
         f = px.bar(C, x="Entrenador", y=m, text=C[m].round(2), color="Entrenador",
                    color_discrete_sequence=["#55505a", CLARET_L, BLUE])
         f.update_layout(showlegend=False)
+        f.update_xaxes(title=None)
         st.plotly_chart(style(f, 380), width="stretch")
     with im:
         show("Emery.jfif", "Unai Emery, 139 partidos de Premier con el Villa", scale=0.75)
