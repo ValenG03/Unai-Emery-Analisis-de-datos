@@ -75,7 +75,7 @@ h2,h3{{font-family:'Bebas Neue',sans-serif!important;letter-spacing:2px;color:{B
 .heroWrap{{text-align:center;padding:2.5rem 0 1.5rem;position:relative}}
 .heroWrap:before{{content:"";position:absolute;inset:0;margin:auto;width:min(760px,90vw);height:70%;
   background:radial-gradient(ellipse,{CLARET}88 0%,transparent 65%);filter:blur(30px);z-index:-1}}
-.hero{{font-family:'Anton',Impact,sans-serif!important;font-size:clamp(3rem,8.5vw,8.5rem)!important;line-height:.9;word-break:keep-all;overflow-wrap:normal;margin:0;text-transform:uppercase;
+.hero{{font-family:'Anton',Impact,sans-serif!important;font-size:clamp(3rem,8.5vw,8.5rem)!important;line-height:1.05;padding-top:.12em;word-break:keep-all;overflow-wrap:normal;margin:0;text-transform:uppercase;
   letter-spacing:2px;background:linear-gradient(90deg,{BLUE},#ffffff,{CLARET_L},{BLUE},#ffffff,{CLARET_L});
   background-size:200% auto;-webkit-background-clip:text;color:transparent;
   animation:rise 1.1s cubic-bezier(.2,.8,.2,1) both,shine 6s linear infinite;
@@ -102,14 +102,18 @@ h2,h3{{font-family:'Bebas Neue',sans-serif!important;letter-spacing:2px;color:{B
   border-top:4px solid {BLUE};padding:16px 18px;border-radius:12px;box-shadow:0 8px 30px #00000088}}
 [data-testid=stMetricValue]{{font-family:'Anton';color:{WHT};font-size:2.3rem}}
 [data-testid=stMetricLabel]{{color:{BLUE}!important;text-transform:uppercase;letter-spacing:2px}}
-.stTabs [data-baseweb=tab-list]{{gap:6px;flex-wrap:wrap;justify-content:center}}
-.stTabs [data-baseweb=tab]{{background:{CARD};border:1px solid {CLARET_L}55;border-radius:999px;padding:6px 16px}}
-.stTabs [aria-selected=true]{{background:{CLARET}!important;border-color:{BLUE}!important;color:{WHT}!important}}
+.stTabs [role=tablist]{{gap:8px;flex-wrap:wrap;justify-content:center!important}}
+.stTabs [role=tab]{{background:{CARD};border:1px solid {CLARET_L}55;border-radius:999px;padding:6px 16px}}
+.stTabs [aria-selected=true]{{background:{CLARET}!important;border-color:{BLUE}!important}}
 .card{{background:linear-gradient(145deg,{CARD},#1f0c16);border:1px solid {BLUE}44;border-left:5px solid {CLARET_L};
   padding:20px 22px;border-radius:12px;line-height:1.6}}
 .card b.h{{color:{YELLOW};font-family:'Anton';font-size:1.5rem;letter-spacing:1px}}
 [data-testid=stImage] img{{border-radius:14px;border:1px solid {BLUE}55;box-shadow:0 10px 40px #000a,0 0 0 4px {CLARET}55}}
-[data-testid=stCaptionContainer]{{color:#b9aab1}}
+[data-testid=stCaptionContainer],[data-testid=stCaptionContainer] p{{color:{WHT}!important}}
+[data-testid=stWidgetLabel] p,[data-testid=stWidgetLabel] label,[role=radiogroup] p,[role=radiogroup] label{{color:{WHT}!important}}
+.stTabs [role=tab],.stTabs [role=tab] *{{color:{WHT}!important;opacity:1!important}}
+.note{{color:{WHT}!important;font-size:.85rem;line-height:1.5;padding-top:2rem}}
+.gap{{height:3.5rem}}
 .src{{text-align:center;max-width:760px;margin:0 auto;border-left:1px solid {BLUE}44;border-top:4px solid {CLARET_L}}}
 .src a{{color:{BLUE}!important;text-decoration:none!important;border:none}}
 .src a:hover{{color:{YELLOW}!important}}
@@ -149,8 +153,9 @@ COL = {"Pre-Emery": "#55505a", "Transición": CLARET_L, "Emery": BLUE}
 def style(fig, h=440):
     fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(22,10,16,.55)",
                       font=dict(family="Inter", color=WHT, size=13), height=h, margin=dict(l=10, r=10, t=50, b=10),
-                      legend=dict(orientation="h", y=1.12, x=0, title=None), hoverlabel=dict(bgcolor=CLARET, font_color=WHT))
-    fig.update_xaxes(gridcolor="#2a1820", zeroline=False); fig.update_yaxes(gridcolor="#2a1820", zeroline=False)
+                      legend=dict(orientation="h", y=1.12, x=0, title=None, font=dict(color=WHT)), hoverlabel=dict(bgcolor=CLARET, font_color=WHT))
+    ax = dict(gridcolor="#2a1820", zeroline=False, tickfont_color=WHT, title_font_color=WHT)
+    fig.update_xaxes(**ax); fig.update_yaxes(**ax)
     return fig
 
 def emery_zone(fig):
@@ -297,6 +302,7 @@ f = px.bar(D, x="Mejora %", y="Dimensión", orientation="h", text="Mejora %", co
 f.update_traces(texttemplate="%{x:+.0f}%", textposition="outside")
 f.update_layout(showlegend=False, xaxis_range=[0, D["Mejora %"].max() * 1.2])
 st.plotly_chart(style(f, 300), width="stretch")
+st.markdown('<div class="gap"></div>', unsafe_allow_html=True)
 v1, v2 = st.columns([2.2, 1], vertical_alignment="center")
 v1.markdown(f"""<div class="card">
 <b style="color:{BLUE}">Ataque</b>: de {pre.GF / pre.PJ:.2f} a {emy.GF / emy.PJ:.2f} goles por partido.<br>
@@ -308,8 +314,8 @@ regularidad de club de Champions. La Europa League 2026 es la consecuencia, no l
             unsafe_allow_html=True)
 with v2:
     show("Emery-2.jfif", scale=0.75)
-st.caption("Ataque y defensa: por partido de Premier, Emery (139 PJ) vs Smith + Gerrard + Danks (127 PJ). "
-           "Consistencia: desvío estándar del puesto, 19-22 vs 23-26 (22-23 excluida por mixta).")
+st.markdown('<p class="note">Ataque y defensa: por partido de Premier, Emery (139 PJ) vs Smith + Gerrard + Danks (127 PJ). '
+            'Consistencia: desvío estándar del puesto, 19-22 vs 23-26 (22-23 excluida por mixta).</p>', unsafe_allow_html=True)
 
 # ---------- 05 · ESTAMBUL ----------
 section("Estambul, 20 de mayo de 2026")
