@@ -5,3 +5,4 @@ plotly>=5.20
 seaborn>=0.13
 matplotlib>=3.8
 scikit-learn>=1.4
+pillow>=10.0
